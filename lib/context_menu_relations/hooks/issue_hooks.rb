@@ -43,19 +43,33 @@ module ContextMenuRelations
         IssueRelation::TYPES.sort_by {|r| r[1][:order]}.each do |type|
           relation = type[0]
           options = type[1]
-          relation_html << content_tag(:li, prompt_to_remote(l(options[:name]),
-                                                             l(options[:name]),
-                                                             'relation[issue_to_id',
-                                                             {
-                                                               :controller => 'issue_relations',
-                                                               :action => 'new',
-                                                               :issue_id => context[:issues].first.id,
-                                                               :relation => {:relation_type => relation},
-                                                               :back_to => context[:back]
-                                                             }))
-        end
+          url =
+            if context[:issues].length <= 1
+              {
+              :controller => 'issue_relations',
+              :action => 'new',
+              :issue_id => context[:issues].first.id,
+              :relation => {:relation_type => relation},
+              :back_to => context[:back]
+            }
+        else
+              {
+              :controller => 'multiple_issue_relations',
+              :action => 'new',
+              :issue_ids => context[:issues].collect(&:id),
+              :relation => {:relation_type => relation},
+              :back_to => context[:back]
+            }
+            end
 
+          relation_html << content_tag(:li, prompt_to_remote(l(options[:name]),
+                                                             l(:field_issue_to),
+                                                             'relation[issue_to_id]',
+                                                             url))
+
+        end
         folder_html = content_tag(:a, l(:label_related_issues), :class => 'submenu') + content_tag(:ul, relation_html)
+        
         return content_tag(:li, folder_html, :class => 'folder', :id => 'relations')
       end
     end

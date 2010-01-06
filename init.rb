@@ -6,6 +6,7 @@ require 'dispatcher'
 Dispatcher.to_prepare :redmine_context_menu_relations do
   require_dependency 'query'
   require_dependency 'queries_helper'
+  
   unless QueriesHelper.included_modules.include? ContextMenuRelations::Patches::QueryPatch
     Query.send(:include, ContextMenuRelations::Patches::QueryPatch)
   end
@@ -21,4 +22,6 @@ Redmine::Plugin.register :redmine_context_menu_relations do
   author 'Author name'
   description 'This is a plugin for Redmine'
   version '0.0.1'
+
+  permission :relate_multiple_issues, { :multiple_issue_relations => [:new]}
 end
