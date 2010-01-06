@@ -4,6 +4,14 @@ require 'redmine'
 require 'dispatcher'
 
 Dispatcher.to_prepare :redmine_context_menu_relations do
+  require_dependency 'query'
+  require_dependency 'queries_helper'
+  unless QueriesHelper.included_modules.include? ContextMenuRelations::Patches::QueryPatch
+    Query.send(:include, ContextMenuRelations::Patches::QueryPatch)
+  end
+  unless QueriesHelper.included_modules.include? ContextMenuRelations::Patches::QueryHelperPatch
+    QueriesHelper.send(:include, ContextMenuRelations::Patches::QueryHelperPatch)
+  end
 end
 
 require 'context_menu_relations/hooks/issue_hooks'
